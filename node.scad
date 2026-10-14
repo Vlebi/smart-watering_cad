@@ -1,27 +1,24 @@
 // ========================================================
-// DripLogic NODE_WATERING - Complete Enclosure, Mount & 1.5L Bottle Adapter
+// DripLogic NODE_WATERING - Simple Slide-In Mount Version
 // ========================================================
 
-// Fő paraméterek
+// --- PARAMETERS ---
 box_length = 75;
 box_width = 55;
 box_height = 30;
 wall_thickness = 2.5;
 corner_radius = 4.0;
-lid_height = 5.0;
 
-// Fali rögzítő fül paraméterek
-tab_width = 12;
-tab_length = 22;
-tab_thickness = 3.0;
-hole_radius = 2.0; // M4 csavarhoz
-
-// 1.5L Palack tartó paraméterek (Vákuum-kompenzált légbevezetővel)
+// Bottle & Vacuum-Break Parameters
 bottle_neck_dia = 28.0; 
 bottle_collar_dia = 38.0;
 bottle_collar_height = 16.0;
 
-// Segédmodul: lekerekített doboz
+// Simple Slide Mount Parameters
+rail_width = 24.0;
+rail_depth = 3.0;
+
+// --- HELPER MODULES ---
 module rounded_box(l, w, h, r) {
     hull() {
         for (x = [r, l - r]) {
@@ -33,64 +30,51 @@ module rounded_box(l, w, h, r) {
     }
 }
 
-// Belső NYÁK rögzítő oszlopok (4 sarok) - Updated for 2mm PCB holes
+// --- INTERNAL PCB STANDOFFS (2mm holes) ---
 module standoffs() {
     post_offset = 6;
     post_radius = 3.5;
     post_height = wall_thickness + 3;
     
-    translate([post_offset, post_offset, wall_thickness])
-        difference() {
-            cylinder(r=post_radius, h=post_height, $fn=30);
-            translate([0, 0, -1]) cylinder(r=1.0, h=post_height + 2, $fn=30); // 2mm PCB hole
-        }
-        
-    translate([box_length - post_offset, post_offset, wall_thickness])
-        difference() {
-            cylinder(r=post_radius, h=post_height, $fn=30);
-            translate([0, 0, -1]) cylinder(r=1.0, h=post_height + 2, $fn=30);
-        }
-        
-    translate([post_offset, box_width - post_offset, wall_thickness])
-        difference() {
-            cylinder(r=post_radius, h=post_height, $fn=30);
-            translate([0, 0, -1]) cylinder(r=1.0, h=post_height + 2, $fn=30);
-        }        
-        
-    translate([box_length - post_offset, box_width - post_offset, wall_thickness])
-        difference() {
-            cylinder(r=post_radius, h=post_height, $fn=30);
-            translate([0, 0, -1]) cylinder(r=1.0, h=post_height + 2, $fn=30);
-        }
+    positions = [
+        [post_offset, post_offset],
+        [box_length - post_offset, post_offset],
+        [post_offset, box_width - post_offset],
+        [box_length - post_offset, box_width - post_offset]
+    ];
+    
+    for (pos = positions) {
+        translate([pos[0], pos[1], wall_thickness])
+            difference() {
+                cylinder(r=post_radius, h=post_height, $fn=30);
+                translate([0, 0, -1]) 
+                    cylinder(r=1.0, h=post_height + 2, $fn=30); // 2mm PCB hole
+            }
+    }
 }
 
-// Beépített fali tartó fülek
-module mounting_tabs() {
-    // Bal oldali fül
-    translate([-tab_width, box_width/2 - tab_length/2, 0])
-        difference() {
-            cube([tab_width, tab_length, tab_thickness]);
-            translate([tab_width/2, tab_length/2, -1])
-                cylinder(r=hole_radius, h=tab_thickness + 2, $fn=30);
-        }
+// --- SIMPLE WALL MOUNTING BRACKET (Screwed to wall, box slides onto this) ---
+module wall_mounting_bracket() {
+    color("DarkGray")
+    translate([box_length / 2 - rail_width / 2, -rail_depth, box_height / 4])
+    difference() {
+        // Simple rectangular slide tongue block
+        cube([rail_width, rail_depth, box_height / 2]);
         
-    // Jobb oldali fül
-    translate([box_length, box_width/2 - tab_length/2, 0])
-        difference() {
-            cube([tab_width, tab_length, tab_thickness]);
-            translate([tab_width/2, tab_length/2, -1])
-                cylinder(r=hole_radius, h=tab_thickness + 2, $fn=30);
-        }
+        // Countersunk M4 wall screw hole in the center
+        translate([rail_width / 2, -1, box_height / 4])
+            rotate([-90, 0, 0])
+                cylinder(r=2.0, h=10, $fn=30);
+    }
 }
 
-// Doboz alsó rész + Fali tartó fülek
+// --- ENCLOSURE BASE + SIMPLE SLIDE SLOT ---
 module enclosure_base() {
     union() {
-        // Fő doboz test
         difference() {
             rounded_box(box_length, box_width, box_height, corner_radius);
 
-            // Belső üreg
+            // Internal cavity
             translate([wall_thickness, wall_thickness, wall_thickness])
                 rounded_box(
                     box_length - (2 * wall_thickness), 
@@ -99,45 +83,48 @@ module enclosure_base() {
                     corner_radius - wall_thickness
                 );
                 
-            // J1 csatlakozó kivágás (Bal oldalt)
+            // J1 sensor connector port (Left)
             translate([-1, 15, wall_thickness + 2])
                 cube([wall_thickness + 2, 12, 10]);
                 
-            // J2 csatlakozó kivágás (Jobb oldalt)
+            // J2 power port (Right)
             translate([box_length - wall_thickness - 1, 15, wall_thickness + 2])
                 cube([wall_thickness + 2, 12, 10]);
                 
-            // Q1 tranzisztor / D1 dióda hőleadási / szerelési nyílás hátul
+            // Rear thermal/wire slot
             translate([box_length / 2 - 10, box_width - wall_thickness - 1, wall_thickness + 8])
                 cube([20, wall_thickness + 2, 15]);
+                
+            // Simple rectangular slot cut into the back wall for the slide mount
+            translate([box_length / 2 - rail_width / 2, -1, box_height / 4])
+                cube([rail_width, wall_thickness + 2, box_height / 2]);
         }
         
         standoffs();
-        mounting_tabs();
     }
 }
 
-// Doboz tető illesztőperemmel, szellőzéssel és 1.5L palack tartóval + légbevezető vákuum-csatornával
+// --- ENCLOSURE LID + OPTIMIZED VACUUM-BREAK BOTTLE ADAPTER ---
 module enclosure_lid() {
     color("LightGray")
-    translate([0, box_width + 20, 0])
+    translate([0, box_width + 15, 0])
     union() {
-        // Tető alaplemez
+        // Lid Base Plate
         difference() {
             rounded_box(box_length, box_width, wall_thickness, corner_radius);
 
-            // Központi vízkifolyó nyílás
+            // Central water outflow port
             translate([box_length / 2, box_width / 2, -1])
                 cylinder(r=8, h=wall_thickness + 2, $fn=30);
 
-            // Szellőzőnyílások a tetőn
+            // Ventilation louvers
             for (i = [15 : 12 : box_length - 25]) {
                 translate([i, 8, -1])
                     cube([4, 12, wall_thickness + 2]);
             }
         }
         
-        // Belső illesztő perem
+        // Internal mating lip for snap/friction fit
         translate([wall_thickness + 0.4, wall_thickness + 0.4, -3])
             rounded_box(
                 box_length - (2 * wall_thickness) - 0.8, 
@@ -146,23 +133,23 @@ module enclosure_lid() {
                 corner_radius - wall_thickness
             );
 
-        // Külső 1.5L palack tartó csonk a tető tetején (légbevezető horonnyal a vákuum elkerülésére)
+        // 1.5L Bottle Collar with Optimized Vacuum-Break Air Channel
         translate([box_length / 2, box_width / 2, wall_thickness])
             difference() {
-                union() {
-                    cylinder(r=bottle_collar_dia / 2, h=bottle_collar_height, $fn=500);
-                }
-                // Palack nyak helye
-                translate([0, 0, -1])
-                    cylinder(r=bottle_neck_dia / 2, h=bottle_collar_height + 2, $fn=500);
+                cylinder(r=bottle_collar_dia / 2, h=bottle_collar_height, $fn=120);
                 
-                // Légbevezető / vákuumtörő csatorna (biztosítja, hogy a víz ki tudjon folyni)
-                translate([-1.5, 0, 0])
-                    cube([3, bottle_collar_dia / 2, bottle_collar_height + 2]);
+                // Bottle neck inner clearance
+                translate([0, 0, -1])
+                    cylinder(r=bottle_neck_dia / 2, h=bottle_collar_height + 2, $fn=120);
+                
+                // Vacuum-break air intake channel slot
+                translate([-1.5, 0, -1])
+                    cube([3, bottle_collar_dia / 2, bottle_collar_height + 3]);
             }
     }
 }
 
-// Teljes modell renderelése
+// --- RENDER ASSEMBLY ---
 enclosure_base();
 enclosure_lid();
+wall_mounting_bracket();
