@@ -14,28 +14,21 @@ tolerance = 0.25;         // Clamshell lip tolerance (mm)
 // PCB Dimensions & Placement
 pcb_w = 35.0;             // PCB X width
 pcb_l = 42.0;             // PCB Y length
-pcb_t = 1.595;            // PCB thickness / reference height (mm)[cite: 5]
-standoff_h = 3.0;         // Bottom clearance for traces/soldering (mm)[cite: 5]
-pcb_z = standoff_h;       // Z position of PCB bottom surface
+pcb_t = 1.595;            
+standoff_h = 3.0;          
+pcb_z = standoff_h;       
 
 // Enclosure Inner Dimensions
 in_w = pcb_w + 2 * clearance;
 in_h = pcb_l + 2 * clearance;
-bottom_depth = standoff_h + pcb_t + 5.0; // Room above PCB for components
-top_depth = 20.0;         // Vertical overhead for components
+bottom_depth = standoff_h + pcb_t + 5.0; 
+top_depth = 20.0;         
 
-// Fastener Specifications (M3 Heat-set inserts & screws)[cite: 5]
-boss_d = 6.5;             // Corner screw boss outer diameter
-m3_hole_d = 3.2;          // M3 clearance hole diameter
-insert_hole_d = 4.2;      // Hole for M3 brass heat-set insert
+boss_d = 6.5;             
+m3_hole_d = 3.2;          
+insert_hole_d = 4.2;      
 insert_depth = 5.7;
 
-// Component Coordinates (Absolute from KiCad STEP -> Converted to Local PCB frame)
-// Local origin at bottom-left corner of PCB (X = 155.0, Y = -115.0)
-// J1 Pin Header: (157.5, -82.5, 1.595) -> Local: (2.5, 32.5)[cite: 5]
-// SW1: (157.75, -108.75, 1.595) -> Local: (2.75, 6.25)[cite: 5]
-// SW2: (177.0, -111.5, 1.595) -> Local: (22.0, 3.5)[cite: 5]
-// SW3: (170.5, -111.5, 1.595) -> Local: (15.5, 3.5)[cite: 5]
 
 origin_x = 155.0;
 origin_y = -115.0;
