@@ -33,7 +33,7 @@ module rounded_box(l, w, h, r) {
     }
 }
 
-// Belső NYÁK rögzítő oszlopok (4 sarok)
+// Belső NYÁK rögzítő oszlopok (4 sarok) - Updated for 2mm PCB holes
 module standoffs() {
     post_offset = 6;
     post_radius = 3.5;
@@ -42,25 +42,25 @@ module standoffs() {
     translate([post_offset, post_offset, wall_thickness])
         difference() {
             cylinder(r=post_radius, h=post_height, $fn=30);
-            translate([0, 0, -1]) cylinder(r=1.5, h=post_height + 2, $fn=30); // M3 csavar
+            translate([0, 0, -1]) cylinder(r=1.0, h=post_height + 2, $fn=30); // 2mm PCB hole
         }
         
     translate([box_length - post_offset, post_offset, wall_thickness])
         difference() {
             cylinder(r=post_radius, h=post_height, $fn=30);
-            translate([0, 0, -1]) cylinder(r=1.5, h=post_height + 2, $fn=30);
+            translate([0, 0, -1]) cylinder(r=1.0, h=post_height + 2, $fn=30);
         }
         
     translate([post_offset, box_width - post_offset, wall_thickness])
         difference() {
             cylinder(r=post_radius, h=post_height, $fn=30);
-            translate([0, 0, -1]) cylinder(r=1.5, h=post_height + 2, $fn=30);
+            translate([0, 0, -1]) cylinder(r=1.0, h=post_height + 2, $fn=30);
         }        
         
     translate([box_length - post_offset, box_width - post_offset, wall_thickness])
         difference() {
             cylinder(r=post_radius, h=post_height, $fn=30);
-            translate([0, 0, -1]) cylinder(r=1.5, h=post_height + 2, $fn=30);
+            translate([0, 0, -1]) cylinder(r=1.0, h=post_height + 2, $fn=30);
         }
 }
 
