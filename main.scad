@@ -1,7 +1,4 @@
-// ============================================================================
-// MAIN_WATERING Electronic Assembly Enclosure
-// Derived from KiCad STEP model data & mechanical specifications
-// ============================================================================
+
 
 // Render selection: "both", "bottom", "top", or "assembly"
 part = "both"; // [both, bottom, top, assembly]
@@ -43,7 +40,7 @@ sw3_pos = [local_x(170.5), local_y(-111.5)];
 
 $fn = 60;
 
-// --- Main Module Execution ---
+
 if (part == "bottom" || part == "both" || part == "assembly") {
     translate([0, 0, 0])
         bottom_shell();
@@ -59,9 +56,7 @@ if (part == "assembly") {
 }
 
 
-// ============================================================================
-// MODULES
-// ============================================================================
+
 
 module bottom_shell() {
     outer_w = in_w + 2 * wall;
@@ -84,7 +79,7 @@ module bottom_shell() {
         translate([0, 0, wall])
             cube([in_w, in_h, bottom_depth]);
             
-        // Clamshell mating lip (recess on bottom shell top rim)
+        // Clamshell mating lip
         translate([-wall + tolerance, -wall + tolerance, bottom_depth - 1.5])
             cube([outer_w - 2 * tolerance, outer_l - 2 * tolerance, 1.6]);
             
@@ -94,7 +89,7 @@ module bottom_shell() {
         translate([j1_pos[0] - 1.0, in_h - wall - 0.5, pcb_z])
             cube([12.0, wall + 2.0, 10.0]);
             
-        // Tactile Push Buttons Access / Clearance[cite: 5]
+        // Buttons Access / Clearance[cite: 5]
         translate([sw1_pos[0] - 3.0, sw1_pos[1] - 3.0, -1])
             cylinder(h = wall + 2, d = 6.5);
         translate([sw2_pos[0] - 3.0, sw2_pos[1] - 3.0, -1])
@@ -102,7 +97,7 @@ module bottom_shell() {
         translate([sw3_pos[0] - 3.0, sw3_pos[1] - 3.0, -1])
             cylinder(h = wall + 2, d = 6.5);
             
-        // Cable entry / Wire cutout on back wall
+        // Cable entry
         translate([in_w / 2 - 5.0, -wall - 1.0, pcb_z])
             cube([10.0, wall + 2.0, 8.0]);
     }
@@ -118,7 +113,7 @@ module top_shell() {
             translate([-wall, -wall, 0])
                 cube([outer_w, outer_l, top_depth]);
             
-            // Corner Screw Bosses for Top Lid
+            
             top_corner_bosses(top_depth);
         }
         
@@ -133,7 +128,7 @@ module top_shell() {
         // Countersunk holes for M3 screw heads on top[cite: 5]
         top_countersunk_holes(top_depth);
         
-        // Ventilation slots on top lid
+        // Ventilation slots
         for (i = [10 : 8 : in_w - 10]) {
             translate([i, in_h / 2 - 10, top_depth - wall - 1])
                 cube([3.0, 20.0, wall + 2.0]);
@@ -216,7 +211,7 @@ module pcb_standoffs() {
 }
 
 module pcb_assembly() {
-    // Reference PCB visualization
+    
     color("green", 0.8)
     translate([clearance, clearance, pcb_z])
         cube([pcb_w, pcb_l, pcb_t]);
@@ -226,7 +221,7 @@ module pcb_assembly() {
     translate([j1_pos[0], j1_pos[1], pcb_z + pcb_t])
         cube([10.16, 2.54, 8.5]);
         
-    // Tactile Push Buttons[cite: 5]
+    // Buttons[cite: 5]
     color("silver") {
         translate([sw1_pos[0] - 3, sw1_pos[1] - 3, pcb_z + pcb_t])
             cube([6, 6, 4.3]);
