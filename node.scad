@@ -1,23 +1,6 @@
-// =============================================================================
-//  DripLogic NODE_WATERING - Modular Hollow Water Fittings & Side Caddy
-// =============================================================================
-//  PARTS
-//   base                  Tray: PCB standoffs, J1/J2 cut-outs, rear wire slot, dovetail pad.
-//   lid                   Flat solid lid: internal lip, crush-ribs (completely sealed / dry).
-//   bracket               Wall plate: MALE dovetail rail, bottom stop ledge, 4x M4 countersunk.
-//   side_caddy            Isolated wet-zone threaded bottle holder with offset threaded outflow.
-//   solenoid_holder       Cradle for WSV-12V 1/2" solenoid valve.
-//   straight_fitting      Modular hollow straight water path connector.
-//   curve_fitting         Modular hollow curved water path connector.
-//   elbow90_fitting       Modular hollow 90-degree elbow water path connector.
-//   female_fitting        Modular hollow female socket to connect male pipes.
-//   female_tube_long      Extended 50mm double-female tube.
-//   solenoid_adapter      Adapter: Modular Male to 1/2" Female for WSV-12V.
-//   solenoid_inline_valve Inline flow-control tube with 1/2" top port for the WSV-12V plunger.
-//   sprinkler_fitting     End cap with female thread and array of sprinkler holes.
-// =============================================================================
 
-/* [Render selection] */
+
+
 part = "print_plate"; // [assembly, exploded, section, base, lid, bracket, side_caddy, solenoid_holder, straight_fitting, curve_fitting, elbow90_fitting, female_fitting, female_tube_long, solenoid_adapter, solenoid_inline_valve, sprinkler_fitting, print_plate]
 $fn = 64;
 
@@ -41,7 +24,7 @@ standoff_h      = 6.0;
 standoff_r      = 3.5;
 standoff_hole_r = 1.0;
 
-/* [Connector and vent cut-outs] */
+/* [Connector and vent] */
 cut_r = 1.0;
 j1_w = 18; j1_h = 8; j1_y = 0; j1_z = 14;
 j2_w = 12; j2_h = 9; j2_y = 0; j2_z = 14;
@@ -62,7 +45,7 @@ screw_d    = 4.5;
 csk_d      = 8.4;
 screw_edge = 7;
 
-/* [Bottle collar & Snorkel tube - Xixo 1.5L Optimized] */
+/* [Bottle collar & Snorkel tube - Xixo 1.5L] */
 outflow_r     = 8;
 collar_od     = 40;
 neck_d        = 28.5; 
@@ -79,10 +62,10 @@ valve_body_dia  = 36.0;
 valve_bracket_w = 50.0;
 valve_bracket_h = 42.0;
 
-/* [Modular Water Path Fittings] */
+/* [Modular Water Fittings] */
 water_bore_d    = 10.0; 
 
-/* [Hidden] */
+
 eps         = 0.01;
 lid_t       = wall;
 floor_t     = wall;
@@ -96,9 +79,7 @@ thr_z0      = 0.8;
 thr_top     = 1.0;
 thr_up      = 0.1;
 
-// =============================================================================
-//  2D HELPERS
-// =============================================================================
+
 module rrect2d(l, w, r) {
     rr = max(r, 0.05);
     offset(r = rr) square([max(l - 2*rr, 0.01), max(w - 2*rr, 0.01)], center = true);
@@ -125,9 +106,7 @@ module dovetail_slot(len) {
     translate([0, 0, -eps]) linear_extrude(height = len + 2*eps, convexity = 4) slot_profile();
 }
 
-// =============================================================================
-//  BASE
-// =============================================================================
+
 module standoffs() {
     for (sx = [-1, 1], sy = [-1, 1])
         translate([sx*pcb_hole_dx/2, sy*pcb_hole_dy/2, 0])
@@ -170,9 +149,7 @@ module base() {
     standoffs();
 }
 
-// =============================================================================
-//  BOTTLE COLLAR
-// =============================================================================
+
 function ang(v) = 360 * v / thr_pitch;
 
 module thread_section() {
@@ -210,9 +187,7 @@ module bottle_collar() {
     }
 }
 
-// =============================================================================
-//  SEALED DRY LID
-// =============================================================================
+
 module crush_rib() {
     r = 0.5;
     c = fit_clear + rib_interf - r;
@@ -243,9 +218,7 @@ module lid() {
     }
 }
 
-// =============================================================================
-//  ISOLATED SIDE-MOUNTED BOTTLE CADDY
-// =============================================================================
+
 module side_bottle_caddy() {
     caddy_base_w = 56;
     caddy_base_l = 56;
@@ -267,15 +240,15 @@ module side_bottle_caddy() {
             translate([0, 0, wall])
                 bottle_collar();
                 
-            // Narrow neck to clear the snorkel hole
+           
             translate([main_x, main_y, -narrow_len])
                 cylinder(r = 8, h = narrow_len, $fn = 40);
                 
-            // Widened threaded boss section further down
+            
             translate([main_x, main_y, -total_boss_len])
                 cylinder(r = 14, h = wide_len, $fn = 60);
                 
-            // Chamfered transition between narrow and wide sections
+           
             translate([main_x, main_y, -narrow_len - 2])
                 cylinder(r1 = 14, r2 = 8, h = 2, $fn = 60);
         }
@@ -304,9 +277,7 @@ module side_bottle_caddy() {
     }
 }
 
-// =============================================================================
-//  SOLENOID VALVE HOLDER
-// =============================================================================
+
 module solenoid_holder() {
     bracket_thk = 4.0;
     cradle_h = 25.0;
@@ -336,9 +307,7 @@ module solenoid_holder() {
     }
 }
 
-// =============================================================================
-//  MODULAR HOLLOW THREADED WATER FITTINGS
-// =============================================================================
+
 
 module threaded_connector_body(length) {
     cylinder(r=10, h=length, $fn=40);
@@ -516,9 +485,7 @@ module sprinkler_fitting() {
     }
 }
 
-// =============================================================================
-//  WALL BRACKET
-// =============================================================================
+
 module csk_hole() {
     csk_depth = (csk_d - screw_d)/2;
     translate([0, 0, -eps]) cylinder(d1 = csk_d + 2*eps, d2 = screw_d, h = csk_depth + eps);
@@ -539,9 +506,7 @@ module bracket() {
     }
 }
 
-// =============================================================================
-//  ASSEMBLY / LAYOUT
-// =============================================================================
+
 module bracket_in_place() { translate([0, pad_y0, -ledge_h]) bracket(); }
 
 module assembly() {
